@@ -2,6 +2,7 @@ package com.example.calculator.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,17 +21,29 @@ import com.example.calculator.vm.HistoryEntry
 fun HistoryPanel(
     history: List<HistoryEntry>,
     onSelectExpression: (HistoryEntry) -> Unit,
-    onSelectResult: (HistoryEntry) -> Unit
+    onSelectResult: (HistoryEntry) -> Unit,
+    onClear: () -> Unit
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
-        Text(
-            text = "History",
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurface
-        )
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = "History",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            TextButton(onClick = onClear) {
+                Text(
+                    text = "Clear",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+        }
         if (history.isEmpty()) {
             Text(
                 text = "No history yet",

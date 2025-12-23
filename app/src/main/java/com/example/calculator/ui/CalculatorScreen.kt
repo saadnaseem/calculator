@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
@@ -18,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -29,7 +31,9 @@ import com.example.calculator.vm.CalculatorViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CalculatorScreen(
-    viewModel: CalculatorViewModel = viewModel()
+    viewModel: CalculatorViewModel = viewModel(
+        factory = CalculatorViewModel.provideFactory(LocalContext.current)
+    )
 ) {
     val state = viewModel.uiState
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -42,9 +46,28 @@ fun CalculatorScreen(
             HistoryPanel(
                 history = state.history,
                 onSelectExpression = { viewModel.onEvent(CalculatorEvent.HistorySelected(it)) },
-                onSelectResult = { viewModel.onEvent(CalculatorEvent.HistoryResultSelected(it)) }
+                onSelectResult = { viewModel.onEvent(CalculatorEvent.HistoryResultSelected(it)) },
+                onClear = { viewModel.onEvent(CalculatorEvent.RequestClearHistory) }
             )
         }
+    }
+
+    if (state.showClearHistoryDialog) {
+        AlertDialog(
+            onDismissRequest = { viewModel.onEvent(CalculatorEvent.DismissClearHistory) },
+            title = { Text("Clear history?") },
+            text = { Text("This will remove all saved calculations.") },
+            confirmButton = {
+                TextButton(onClick = { viewModel.onEvent(CalculatorEvent.ConfirmClearHistory) }) {
+                    Text("Clear")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { viewModel.onEvent(CalculatorEvent.DismissClearHistory) }) {
+                    Text("Cancel")
+                }
+            }
+        )
     }
 
     Surface(
@@ -103,7 +126,9 @@ fun CalculatorScreen(
 
             CalculatorKeypad(
                 onKeyPress = { viewModel.onEvent(CalculatorEvent.Input(it)) },
-                onEquals = { viewModel.onEvent(CalculatorEvent.Equals) }
+                onEquals = { viewModel.onEvent(CalculatorEvent.Equals) },
+                isSecondEnabled = state.isSecondEnabled,
+                onToggleSecond = { viewModel.onEvent(CalculatorEvent.ToggleSecond) }
             )
         }
     }

@@ -10,5 +10,9 @@ sealed class CalculatorEvent {
     object CloseHistory : CalculatorEvent()
     data class HistorySelected(val entry: HistoryEntry) : CalculatorEvent()
     data class HistoryResultSelected(val entry: HistoryEntry) : CalculatorEvent()
+    object RequestClearHistory : CalculatorEvent()
+    object ConfirmClearHistory : CalculatorEvent()
+    object DismissClearHistory : CalculatorEvent()
+    object ToggleSecond : CalculatorEvent()
 }
 

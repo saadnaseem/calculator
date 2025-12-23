@@ -15,6 +15,8 @@ data class CalculatorUiState(
     val isHistoryOpen: Boolean = false,
     val result: String? = null,
     val errorMessage: String? = null,
-    val ansValue: Double = 0.0
+    val ansValue: Double = 0.0,
+    val showClearHistoryDialog: Boolean = false,
+    val isSecondEnabled: Boolean = false
 )
 

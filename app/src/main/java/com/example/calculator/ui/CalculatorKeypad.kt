@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,7 +17,9 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun CalculatorKeypad(
     onKeyPress: (String) -> Unit,
-    onEquals: () -> Unit
+    onEquals: () -> Unit,
+    isSecondEnabled: Boolean,
+    onToggleSecond: () -> Unit
 ) {
     val primaryRows = listOf(
         listOf("7", "8", "9", "÷"),
@@ -26,21 +29,39 @@ fun CalculatorKeypad(
         listOf("+", "^", "!", "=")
     )
 
-    val scientificKeys = listOf(
-        "sin", "cos", "tan", "asin",
-        "acos", "atan", "ln", "log",
-        "sqrt", "abs", "ANS"
-    )
+    val primaryFunctions = listOf("sin", "cos", "tan", "ln", "log", "sqrt", "abs", "exp")
+    val inverseFunctions = listOf("asin", "acos", "atan", "ln", "log", "sqrt", "abs", "exp")
+    val constants = listOf("ANS", "π", "e")
+    val scientificKeys = (if (isSecondEnabled) inverseFunctions else primaryFunctions) + constants
+    val functionKeys = primaryFunctions.toSet() + inverseFunctions.toSet()
 
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
-        Text(
-            text = "Scientific",
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onBackground
-        )
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = "Scientific",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            Button(
+                onClick = onToggleSecond,
+                colors = if (isSecondEnabled) {
+                    ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                    )
+                } else {
+                    ButtonDefaults.buttonColors()
+                }
+            ) {
+                Text(text = "2nd")
+            }
+        }
         scientificKeys.chunked(4).forEach { row ->
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -50,7 +71,13 @@ fun CalculatorKeypad(
                     CalculatorKeyButton(
                         label = key,
                         modifier = Modifier.weight(1f),
-                        onClick = { onKeyPress(key) }
+                        onClick = {
+                            if (functionKeys.contains(key)) {
+                                onKeyPress("$key(")
+                            } else {
+                                onKeyPress(key)
+                            }
+                        }
                     )
                 }
                 repeat(4 - row.size) {
