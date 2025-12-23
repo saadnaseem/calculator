@@ -1,0 +1,19 @@
+# Android/IntelliJ
+.idea
+.gradle
+local.properties
+*.iml
+*.hprof
+captures/
+
+# Build outputs
+/build
+/app/build
+
+# Gradle
+gradle-app.setting
+.gradletasknamecache
+
+# Misc
+.DS_Store
+
