@@ -12,6 +12,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -57,7 +60,10 @@ fun CalculatorKeypad(
                     )
                 } else {
                     ButtonDefaults.buttonColors()
-                }
+                },
+                modifier = Modifier
+                    .semantics { contentDescription = "toggle_second" }
+                    .testTag("toggle_second")
             ) {
                 Text(text = "2nd")
             }
@@ -77,7 +83,8 @@ fun CalculatorKeypad(
                             } else {
                                 onKeyPress(key)
                             }
-                        }
+                        },
+                        tag = "key_$key"
                     )
                 }
                 repeat(4 - row.size) {
@@ -103,13 +110,15 @@ fun CalculatorKeypad(
                         CalculatorKeyButton(
                             label = key,
                             modifier = Modifier.weight(1f),
-                            onClick = onEquals
+                            onClick = onEquals,
+                            tag = "key_$key"
                         )
                     } else {
                         CalculatorKeyButton(
                             label = key,
                             modifier = Modifier.weight(1f),
-                            onClick = { onKeyPress(key) }
+                            onClick = { onKeyPress(key) },
+                            tag = "key_$key"
                         )
                     }
                 }
@@ -122,11 +131,14 @@ fun CalculatorKeypad(
 private fun CalculatorKeyButton(
     label: String,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    tag: String
 ) {
     Button(
         onClick = onClick,
         modifier = modifier
+            .semantics { contentDescription = tag }
+            .testTag(tag)
     ) {
         Text(text = label)
     }

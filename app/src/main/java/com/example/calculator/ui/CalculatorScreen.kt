@@ -19,9 +19,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -91,10 +93,16 @@ fun CalculatorScreen(
                     color = MaterialTheme.colorScheme.onBackground
                 )
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    TextButton(onClick = { viewModel.onEvent(CalculatorEvent.ToggleAngleMode) }) {
+                    TextButton(
+                        onClick = { viewModel.onEvent(CalculatorEvent.ToggleAngleMode) },
+                        modifier = Modifier.semantics { contentDescription = "toggle_angle_mode" }
+                    ) {
                         Text(text = if (state.angleMode.name == "DEG") "DEG" else "RAD")
                     }
-                    TextButton(onClick = { viewModel.onEvent(CalculatorEvent.ToggleHistory) }) {
+                    TextButton(
+                        onClick = { viewModel.onEvent(CalculatorEvent.ToggleHistory) },
+                        modifier = Modifier.semantics { contentDescription = "open_history" }
+                    ) {
                         Text(text = "History")
                     }
                 }
@@ -161,7 +169,9 @@ private fun DisplayArea(
                 style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.End,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .semantics { contentDescription = "display_expression" }
             )
         }
         Spacer(modifier = Modifier.height(4.dp))
@@ -174,7 +184,9 @@ private fun DisplayArea(
             style = MaterialTheme.typography.titleMedium,
             color = if (errorMessage != null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.End,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .semantics { contentDescription = "display_result" }
         )
     }
 }
